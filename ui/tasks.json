@@ -1,0 +1,59 @@
+{
+  "phases": [
+    {"id": "p1", "title": "Clean and document", "why": "Know exactly what you have before changing anything.", "tasks": [
+      {"id": "a1", "t": "Photograph both sides of the board in high resolution", "n": "Your before picture. You'll reference these constantly while tracing."},
+      {"id": "a2", "t": "Clean the corrosion with 99% isopropyl alcohol and a soft brush", "n": "Gentle first. Heat and flux only on joints that still look bad after cleaning."},
+      {"id": "a3", "t": "Inspect under magnification and log every IC, the regulator, and the crystal markings", "n": "Write down U1–U5 part numbers and the frequency printed on Y1."},
+      {"id": "a4", "t": "Sketch the board's zones: power input, regulator, relays/optocouplers, safety input, display, keypad", "n": "The safety cutoff circuit is probably where the optocouplers live. Worth understanding even if you won't use it."}
+    ]},
+    {"id": "p2", "title": "Bring up power", "why": "Get a clean, safe 5V onto the chip's rail.", "tasks": [
+      {"id": "b1", "t": "Find VDD (pin 20) and VSS (pins 8 and 19) and follow them to the board's power rail"},
+      {"id": "b2", "t": "Identify the regulator and where the ribbon cable used to bring power in"},
+      {"id": "b3", "t": "Feed 5V from a USB breakout into the rail after the regulator", "n": "Use a current-limited bench supply at school for the first power-up if one is available (about 100 mA limit)."},
+      {"id": "b4", "t": "Measure 5V at pin 20 and note the board's current draw"}
+    ]},
+    {"id": "p3", "title": "Map the board", "why": "The pin map is the foundation for all your code. This is where Fusion earns its keep.", "tasks": [
+      {"id": "c1", "t": "Confirm header E3 is the programming header", "n": "Continuity to MCLR (1), VDD (20), VSS (8/19), PGC (27), PGD (28)."},
+      {"id": "c2", "t": "Trace each display segment and digit-select line to its PIC pin", "n": "Note whether the display is common anode or common cathode, and whether transistors drive the digits."},
+      {"id": "c3", "t": "Trace LEDs DS3–DS7 and the keypad header E2 to their PIC pins"},
+      {"id": "c4", "t": "Check whether RC3/RC4 (I²C pins) are free or already wired to something", "n": "That decides where the RTC connects."},
+      {"id": "c5", "t": "Build a pin map table: PIC pin → net → what it drives"}
+    ]},
+    {"id": "p4", "title": "Set up the toolchain", "why": "Get the programmer and software ready before touching the chip.", "tasks": [
+      {"id": "d1", "t": "Check MPLAB X's supported-device list for PIC16F73 with the programmer you plan to buy", "n": "PICkit 4 or 5 is the safer choice than a PICkit 3 for current MPLAB X."},
+      {"id": "d2", "t": "Get a PICkit and header pins or jumper wires"},
+      {"id": "d3", "t": "Install MPLAB X IDE and the XC8 compiler"},
+      {"id": "d4", "t": "Read the datasheet sections on I/O ports, Timer0/Timer1, and configuration bits"}
+    ]},
+    {"id": "p5", "title": "First contact", "why": "Talk to the chip without breaking anything you can't undo.", "tasks": [
+      {"id": "e1", "t": "Connect the PICkit and read the device ID", "n": "Power the board yourself rather than from the PICkit."},
+      {"id": "e2", "t": "Read and save the factory firmware as a .hex file before any erase", "n": "If it isn't code-protected, keep it. Disassembling it is a bonus project."},
+      {"id": "e3", "t": "Blink one LED in assembly", "n": "About 20 instructions. Code by Petzold, made real."},
+      {"id": "e4", "t": "Blink the same LED in C with XC8"}
+    ]},
+    {"id": "p6", "title": "Drive the display", "why": "Go from one segment to a full counting display.", "tasks": [
+      {"id": "f1", "t": "Light a single segment"},
+      {"id": "f2", "t": "Show any digit 0–9 on one position using a lookup table"},
+      {"id": "f3", "t": "Multiplex all three digits from a timer interrupt"},
+      {"id": "f4", "t": "Run a test counter from 000 to 999"}
+    ]},
+    {"id": "p7", "title": "Keep time and remember it", "why": "Make it a real day counter that survives power loss.", "tasks": [
+      {"id": "g1", "t": "Build a 1-second timebase with Timer1 and measure its drift against your phone over 24 hours"},
+      {"id": "g2", "t": "Wire a DS3231 RTC module with coin cell to the I²C pins", "n": "The common ZS-042 module also has a small EEPROM. Store the start date there."},
+      {"id": "g3", "t": "Compute days = today's date − start date and show it on the display"},
+      {"id": "g4", "t": "Add a keypad button to reset the start date"},
+      {"id": "g5", "t": "Pull the power, wait, restore it, and confirm the count is correct"}
+    ]},
+    {"id": "p8", "title": "Enclosure", "why": "Make it a finished object for your desk.", "tasks": [
+      {"id": "h1", "t": "Measure the board, mounting holes, display window, and connectors with calipers"},
+      {"id": "h2", "t": "Model the enclosure in Tinkercad with your CSA teacher"},
+      {"id": "h3", "t": "Print, test-fit, and revise"}
+    ]},
+    {"id": "p9", "title": "Version 2 (later)", "why": "Only after v1 works. Options to explore, not commitments.", "tasks": [
+      {"id": "i1", "t": "Look into a PIC16F886 as a replacement chip", "n": "Same 28-pin family, adds data EEPROM and an internal oscillator. Confirm the pinout against both datasheets first."},
+      {"id": "i2", "t": "Add a Pico W that gets exact time over Wi-Fi and sends it to the PIC over UART", "n": "Needs a level shifter: the Pico is 3.3V, the PIC is 5V."},
+      {"id": "i3", "t": "Design a single custom PCB in KiCad or Fusion with a fresh chip and the RTC on board"},
+      {"id": "i4", "t": "Write up the build with code, the pin map, and photos"}
+    ]}
+  ]
+}
