@@ -3,89 +3,118 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Day Counter Plan</title>
+<title>Day Counter</title>
 <style>
-/* Layout: one narrow column of build phases, each a numbered stage with a progress meter */
+/* Layout: one calm column. Serif headlines for the story, system sans for the work, grouped inset lists like a native Mac app. */
 :root{
-  --bg:#f3f5f1; --panel:#ffffff; --fg:#17201a; --muted:#5d6a60; --line:#d6ddd5;
-  --mask:#1f5a3a; --copper:#b0672a; --done:#2f7d4f; --track:#e2e8e1;
-  --display:"Avenir Next Condensed","Arial Narrow",sans-serif;
-  --body:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
-  --mono:"SF Mono",Menlo,ui-monospace,monospace;
+  --bg:#f5f5f7; --card:#ffffff; --fg:#1d1d1f; --muted:#6e6e73; --faint:#86868b;
+  --sep:rgba(0,0,0,.09); --ring:#e8e8ed; --accent:#0071e3; --good:#248a3d;
+  --serif:ui-serif,"New York","Iowan Old Style",Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace;
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){:root{
-  --bg:#0f1712; --panel:#16211a; --fg:#e4ebe5; --muted:#93a396; --line:#2a3a2f;
-  --mask:#6fbf8f; --copper:#e0975a; --done:#6fbf8f; --track:#233128; color-scheme:dark}}
+  --bg:#000000; --card:#1c1c1e; --fg:#f5f5f7; --muted:#98989d; --faint:#6e6e73;
+  --sep:rgba(255,255,255,.1); --ring:#2c2c2e; --accent:#2997ff; --good:#30d158; color-scheme:dark}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5;-webkit-user-select:none;user-select:none}
-.wrap{max-width:760px;margin:0 auto;padding:32px 20px 64px;display:flex;flex-direction:column;gap:24px}
-header{display:flex;flex-direction:column;gap:8px}
-.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--copper)}
-h1{font-family:var(--display);font-weight:700;font-size:clamp(32px,6vw,44px);line-height:1;margin:0}
-.sub{color:var(--muted);margin:0;max-width:62ch}
-.overall{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:12px;color:var(--muted)}
-.bar{flex:1;height:8px;background:var(--track);border-radius:4px;overflow:hidden}
-.bar>i{display:block;height:100%;background:var(--done);transition:width .3s}
-.decision{border:1px solid var(--line);border-left:4px solid var(--copper);background:var(--panel);padding:16px;border-radius:6px;display:flex;flex-direction:column;gap:6px}
-.decision b{font-family:var(--display);font-size:19px}
-.decision p{margin:0;color:var(--muted)}
+html,body{margin:0;background:var(--bg)}
+body{color:var(--fg);font-family:var(--sans);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased;-webkit-user-select:none;user-select:none}
+.wrap{max-width:680px;margin:0 auto;padding:44px 24px 72px;display:flex;flex-direction:column;gap:36px}
+
+/* Header */
+header{display:flex;flex-direction:column;gap:10px}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+h1{font-family:var(--serif);font-weight:500;font-size:44px;line-height:1.05;letter-spacing:-.01em;margin:0}
+.lede{font-family:var(--serif);font-size:19px;line-height:1.4;color:var(--muted);margin:0;max-width:34em}
+
+/* Summary */
+.summary{display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:center;background:var(--card);border-radius:14px;padding:18px 20px}
+.ringbox{position:relative;width:64px;height:64px}
+.ringbox svg{width:64px;height:64px;transform:rotate(-90deg)}
+.ringbox circle{fill:none;stroke-width:7}
+.ringbox .track{stroke:var(--ring)}
+.ringbox .val{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset .5s ease}
+.ringbox span{position:absolute;inset:0;display:grid;place-items:center;font-size:14px;font-weight:600;font-variant-numeric:tabular-nums}
+.sumtext{display:flex;flex-direction:column;gap:2px;min-width:0}
+.sumtext b{font-size:15px;font-weight:600}
+.next{color:var(--muted)}
+.next em{font-style:normal;color:var(--fg)}
+
+/* Note */
+.note{display:flex;flex-direction:column;gap:6px;padding:0 4px}
+.label{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+.note p{margin:0;font-family:var(--serif);font-size:17px;line-height:1.5}
+
+/* Phases */
 .phase{display:flex;flex-direction:column;gap:10px}
-.ph-head{display:grid;grid-template-columns:auto 1fr auto;align-items:baseline;gap:12px;border-bottom:1px solid var(--line);padding-bottom:6px}
-.ph-num{font-family:var(--mono);font-weight:600;color:var(--mask);font-size:13px}
-.ph-title{font-family:var(--display);font-weight:600;font-size:23px;margin:0;line-height:1.1}
-.ph-count{font-family:var(--mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
-.ph-why{margin:0;color:var(--muted);font-size:14px}
-.phase.complete .ph-num{color:var(--done)}
-ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
-li label{display:grid;grid-template-columns:22px 1fr;gap:10px;padding:8px 6px;border-radius:6px;cursor:default;align-items:start}
-li label:hover{background:var(--panel)}
-input[type=checkbox]{width:17px;height:17px;margin:3px 0 0;accent-color:var(--done)}
-input[type=checkbox]:focus-visible{outline:2px solid var(--copper);outline-offset:2px}
-.t{min-width:0}
-.t span{display:block}
-.t small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
-li.done .t span{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--line)}
-code{font-family:var(--mono);font-size:.86em;background:var(--track);padding:1px 4px;border-radius:3px}
-.foot{font-family:var(--mono);font-size:11px;color:var(--muted)}
-.foot.err{color:var(--copper)}
-@media (prefers-reduced-motion: reduce){.bar>i{transition:none}}
+.ph-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:0 4px}
+.ph-title{display:flex;flex-direction:column;gap:2px;min-width:0}
+.ph-title h2{font-family:var(--serif);font-weight:500;font-size:23px;line-height:1.15;margin:0}
+.ph-why{color:var(--muted);margin:0}
+.ph-count{font-size:12px;color:var(--faint);font-variant-numeric:tabular-nums;white-space:nowrap}
+.phase.complete .ph-count{color:var(--good);font-weight:600}
+ul{list-style:none;margin:0;padding:0;background:var(--card);border-radius:14px;overflow:hidden}
+label{display:grid;grid-template-columns:22px 1fr;gap:14px;align-items:start;padding:13px 18px;cursor:default}
+/* inset hairline between rows, starting under the text like a native list */
+li+li label{background:linear-gradient(var(--sep),var(--sep)) 54px 0/calc(100% - 54px) 1px no-repeat}
+.sr{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.check{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--faint);margin-top:1px;display:grid;place-items:center;transition:background .15s,border-color .15s}
+.check::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 2px 2px 0;transform:translateY(-1px) rotate(45deg);opacity:0}
+.sr:checked+.check{background:var(--accent);border-color:var(--accent)}
+.sr:checked+.check::after{opacity:1}
+.sr:focus-visible+.check{outline:3px solid color-mix(in srgb,var(--accent) 40%,transparent);outline-offset:2px}
+.txt{display:flex;flex-direction:column;gap:2px;min-width:0}
+.t{font-size:14px}
+.n{font-size:13px;color:var(--muted)}
+li.done .t{color:var(--faint)}
+code{font-family:var(--mono);font-size:.9em}
+
+.foot{font-size:12px;color:var(--faint);text-align:center}
+.foot.err{color:#d70015}
+@media (prefers-reduced-motion: reduce){.ringbox .val,.check{transition:none}}
 </style>
 </head>
 <body>
-<main class="wrap" id="app"><p class="foot">Loading your plan…</p></main>
+<main class="wrap" id="app"><p class="foot">Loading…</p></main>
 <script>
 (function () {
   var phases = [], done = {}, updated = "", saveTimer = null, saveError = "";
   var app = document.getElementById("app");
+  var C = 2 * Math.PI * 28;
 
   function api() { return window.pywebview && window.pywebview.api; }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
   function fmt(s) { return esc(s).replace(/\b(MCLR|VDD|VSS|PGC|PGD|RC3\/RC4|E3|E2|Y1|U1–U5|DS3–DS7)\b/g, "<code>$1</code>"); }
 
   function render() {
-    var total = 0, count = 0, html = "";
+    var total = 0, count = 0, next = null, html = "";
     phases.forEach(function (p, i) {
       var pd = p.tasks.filter(function (t) { return done[t.id]; }).length;
       total += p.tasks.length; count += pd;
-      html += '<section class="phase' + (pd === p.tasks.length ? " complete" : "") + '"><div class="ph-head"><span class="ph-num">' +
-        String(i + 1).padStart(2, "0") + '</span><h2 class="ph-title">' + esc(p.title) + '</h2><span class="ph-count">' + pd + "/" + p.tasks.length +
-        '</span></div><p class="ph-why">' + esc(p.why) + "</p><ul>";
+      var complete = pd === p.tasks.length;
+      html += '<section class="phase' + (complete ? " complete" : "") + '"><div class="ph-head"><div class="ph-title"><span class="label">Phase ' + (i + 1) +
+        '</span><h2>' + esc(p.title) + '</h2><p class="ph-why">' + esc(p.why) + '</p></div><span class="ph-count">' +
+        (complete ? "Complete" : pd + " of " + p.tasks.length) + "</span></div><ul>";
       p.tasks.forEach(function (t) {
-        html += '<li class="' + (done[t.id] ? "done" : "") + '"><label><input type="checkbox" id="cb-' + t.id + '" data-id="' + t.id + '"' +
-          (done[t.id] ? " checked" : "") + '><span class="t"><span>' + fmt(t.t) + "</span>" + (t.n ? "<small>" + fmt(t.n) + "</small>" : "") + "</span></label></li>";
+        if (!done[t.id] && !next) next = t.t;
+        html += '<li class="' + (done[t.id] ? "done" : "") + '"><label><input class="sr" type="checkbox" id="cb-' + t.id + '" data-id="' + t.id + '"' +
+          (done[t.id] ? " checked" : "") + '><span class="check" aria-hidden="true"></span><span class="txt"><span class="t">' + fmt(t.t) + "</span>" +
+          (t.n ? '<span class="n">' + fmt(t.n) + "</span>" : "") + "</span></label></li>";
       });
       html += "</ul></section>";
     });
     var pct = total ? Math.round(count / total * 100) : 0;
     app.innerHTML =
-      '<header><span class="eyebrow">PIC16F73 · Hayward / Emerson board</span><h1>Day Counter Build Plan</h1>' +
-      '<p class="sub">From a found pool-heater board to a working days-since counter. Work top to bottom and check things off as you go.</p>' +
-      '<div class="overall"><div class="bar"><i style="width:' + pct + '%"></i></div><span>' + count + "/" + total + " · " + pct + "%</span></div></header>" +
-      '<div class="decision"><b>Build decision: v1 stays on the original board</b><p>The board already has the display, LED drivers, and keypad laid out properly. ' +
-      "Keep the PIC where it is, add an RTC module for time, and save a custom single-board design for v2 with a fresh chip.</p></div>" +
+      '<header><span class="eyebrow">PIC16F73 · Build log</span><h1>Day Counter</h1>' +
+      '<p class="lede">A pool-heater circuit board, found on a kitchen counter, rebuilt into a desk counter one pin at a time.</p></header>' +
+      '<div class="summary"><div class="ringbox"><svg viewBox="0 0 64 64"><circle class="track" cx="32" cy="32" r="28"/><circle class="val" cx="32" cy="32" r="28" stroke-dasharray="' +
+      C + '" stroke-dashoffset="' + (C * (1 - pct / 100)) + '"/></svg><span>' + pct + '%</span></div><div class="sumtext"><b>' + count + " of " + total + ' tasks done</b>' +
+      '<span class="next">' + (next ? "Next up: <em>" + fmt(next) + "</em>" : "Every task is done.") + "</span></div></div>" +
+      '<div class="note"><span class="label">Build decision</span><p>Version 1 stays on the original board. It already has the display, LED drivers and keypad laid out properly. ' +
+      "Keep the PIC where it is, add a real-time clock for time, and save a custom single-board design for version 2.</p></div>" +
       html +
-      '<p class="foot' + (saveError ? " err" : "") + '">' + (saveError ? esc(saveError) : updated ? "Saved on this Mac · " + esc(updated) : "No progress saved yet") + "</p>";
+      '<p class="foot' + (saveError ? " err" : "") + '">' + (saveError ? esc(saveError) : updated ? "Saved on this Mac · " + esc(updated) : "Progress saves on this Mac as you check things off.") + "</p>";
   }
 
   function save() {
@@ -115,6 +144,7 @@ code{font-family:var(--mono);font-size:.86em;background:var(--track);padding:1px
     });
   }
 
+  window.__dayCounterPreview = function (s) { phases = s.phases; done = s.done || {}; updated = s.updated || ""; render(); };
   if (api()) init(); else window.addEventListener("pywebviewready", init);
 })();
 </script>
